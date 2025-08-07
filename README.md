@@ -1,4 +1,4 @@
--- Steal a Brainrot | Tele Lên Trời + Rơi + Giao diện hiện/ẩn hoàn chỉnh
+-- Steal a Brainrot | Tele Lên Cao 75 (Rơi tự do) + Tele Xuống + Giao diện toggle
 -- by ChatGPT
 
 local Players = game:GetService("Players")
@@ -36,7 +36,7 @@ hideButton.Text = "Ẩn UI (Click)"
 hideButton.Font = Enum.Font.Gotham
 hideButton.TextScaled = true
 
--- Nút hiện lại UI (luôn hiển thị)
+-- Nút luôn hiện để mở lại UI
 local showButton = Instance.new("TextButton", ScreenGui)
 showButton.Size = UDim2.new(0, 100, 0, 30)
 showButton.Position = UDim2.new(0, 10, 0, 10)
@@ -46,7 +46,7 @@ showButton.Text = "Hiện UI"
 showButton.Font = Enum.Font.Gotham
 showButton.TextScaled = true
 
--- Logic Teleport
+-- Tele logic
 toggleButton.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
@@ -55,11 +55,11 @@ toggleButton.MouseButton1Click:Connect(function()
 	toggled = not toggled
 
 	if toggled then
-		-- Tele lên trời (Y = 333)
-		hrp.CFrame = CFrame.new(hrp.Position.X, 333, hrp.Position.Z)
+		-- Tele lên độ cao 75 (rơi ngắn hơn)
+		hrp.CFrame = CFrame.new(hrp.Position.X, 75, hrp.Position.Z)
 		toggleButton.Text = "Tele Xuống Đất"
 	else
-		-- Tele xuống đất, tránh base
+		-- Tele xuống đất ngoài base
 		local offsetX = math.random(-100, 100)
 		local offsetZ = math.random(-100, 100)
 		hrp.CFrame = CFrame.new(hrp.Position.X + offsetX, 25, hrp.Position.Z + offsetZ)
@@ -67,12 +67,11 @@ toggleButton.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Ẩn UI
+-- Ẩn / hiện UI
 hideButton.MouseButton1Click:Connect(function()
 	MainFrame.Visible = false
 end)
 
--- Hiện UI lại
 showButton.MouseButton1Click:Connect(function()
 	MainFrame.Visible = true
 end)
