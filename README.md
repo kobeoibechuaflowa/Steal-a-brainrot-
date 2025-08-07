@@ -1,16 +1,16 @@
--- Steal a Brainrot | Tele Lên Cao 75 (Rơi tự do) + Tele Xuống + Giao diện toggle
+-- Steal a Brainrot | Tele Lên Trời (Y=75) - Fix bị kéo lại khi trộm
 -- by ChatGPT
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local toggled = false
 
--- UI chính
+-- UI setup
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "SkyDropUI"
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 220, 0, 100)
+MainFrame.Size = UDim2.new(0, 220, 0, 80)
 MainFrame.Position = UDim2.new(0.5, -110, 0.2, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BackgroundTransparency = 0.1
@@ -23,20 +23,20 @@ toggleButton.Size = UDim2.new(1, -20, 0, 40)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
-toggleButton.Text = "Tele Lên Trời (Rơi)"
+toggleButton.Text = "Tele Lên Trời (Fix Rơi Lại Base)"
 toggleButton.Font = Enum.Font.Gotham
 toggleButton.TextScaled = true
 
 local hideButton = Instance.new("TextButton", MainFrame)
-hideButton.Size = UDim2.new(1, -20, 0, 30)
-hideButton.Position = UDim2.new(0, 10, 0, 60)
+hideButton.Size = UDim2.new(1, -20, 0, 20)
+hideButton.Position = UDim2.new(0, 10, 0, 55)
 hideButton.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
 hideButton.TextColor3 = Color3.new(1, 1, 1)
-hideButton.Text = "Ẩn UI (Click)"
+hideButton.Text = "Ẩn UI"
 hideButton.Font = Enum.Font.Gotham
 hideButton.TextScaled = true
 
--- Nút luôn hiện để mở lại UI
+-- Nút hiện lại UI
 local showButton = Instance.new("TextButton", ScreenGui)
 showButton.Size = UDim2.new(0, 100, 0, 30)
 showButton.Position = UDim2.new(0, 10, 0, 10)
@@ -46,28 +46,25 @@ showButton.Text = "Hiện UI"
 showButton.Font = Enum.Font.Gotham
 showButton.TextScaled = true
 
--- Tele logic
-toggleButton.MouseButton1Click:Connect(function()
+-- Teleport bằng Tween để tránh server kéo lại
+local function smoothTeleportY(yHeight)
 	local char = player.Character
 	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
 	local hrp = char.HumanoidRootPart
 
-	toggled = not toggled
+	local targetCFrame = CFrame.new(hrp.Position.X, yHeight, hrp.Position.Z)
+	local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Linear)
 
-	if toggled then
-		-- Tele lên độ cao 75 (rơi ngắn hơn)
-		hrp.CFrame = CFrame.new(hrp.Position.X, 75, hrp.Position.Z)
-		toggleButton.Text = "Tele Xuống Đất"
-	else
-		-- Tele xuống đất ngoài base
-		local offsetX = math.random(-100, 100)
-		local offsetZ = math.random(-100, 100)
-		hrp.CFrame = CFrame.new(hrp.Position.X + offsetX, 25, hrp.Position.Z + offsetZ)
-		toggleButton.Text = "Tele Lên Trời (Rơi)"
-	end
+	local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+	tween:Play()
+end
+
+-- Khi bấm nút → chỉ teleport lên trời (rơi tự do), tránh bị kéo về
+toggleButton.MouseButton1Click:Connect(function()
+	smoothTeleportY(75) -- Y = 75, rơi tự do ngắn
 end)
 
--- Ẩn / hiện UI
+-- Nút ẩn/hiện
 hideButton.MouseButton1Click:Connect(function()
 	MainFrame.Visible = false
 end)
