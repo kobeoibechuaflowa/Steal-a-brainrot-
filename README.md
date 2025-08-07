@@ -1,11 +1,11 @@
--- Steal a Brainrot | Tele Lên Trời (Rơi tự do) + Tele Xuống + UI Toggle
+-- Steal a Brainrot | Tele Lên Trời + Rơi + Giao diện hiện/ẩn hoàn chỉnh
 -- by ChatGPT
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local toggled = false
 
--- Tạo UI
+-- UI chính
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "SkyDropUI"
 
@@ -16,6 +16,7 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BackgroundTransparency = 0.1
 MainFrame.Active = true
 MainFrame.Draggable = true
+MainFrame.Visible = true
 
 local toggleButton = Instance.new("TextButton", MainFrame)
 toggleButton.Size = UDim2.new(1, -20, 0, 40)
@@ -31,11 +32,21 @@ hideButton.Size = UDim2.new(1, -20, 0, 30)
 hideButton.Position = UDim2.new(0, 10, 0, 60)
 hideButton.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
 hideButton.TextColor3 = Color3.new(1, 1, 1)
-hideButton.Text = "Ẩn/Hiện UI (Click)"
+hideButton.Text = "Ẩn UI (Click)"
 hideButton.Font = Enum.Font.Gotham
 hideButton.TextScaled = true
 
--- Nút điều khiển
+-- Nút hiện lại UI (luôn hiển thị)
+local showButton = Instance.new("TextButton", ScreenGui)
+showButton.Size = UDim2.new(0, 100, 0, 30)
+showButton.Position = UDim2.new(0, 10, 0, 10)
+showButton.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
+showButton.TextColor3 = Color3.new(1, 1, 1)
+showButton.Text = "Hiện UI"
+showButton.Font = Enum.Font.Gotham
+showButton.TextScaled = true
+
+-- Logic Teleport
 toggleButton.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if not char or not char:FindFirstChild("HumanoidRootPart") then return end
@@ -44,11 +55,11 @@ toggleButton.MouseButton1Click:Connect(function()
 	toggled = not toggled
 
 	if toggled then
-		-- Tele lên trời cao → cho rơi tự do
-		hrp.CFrame = CFrame.new(hrp.Position.X, 999, hrp.Position.Z)
+		-- Tele lên trời (Y = 333)
+		hrp.CFrame = CFrame.new(hrp.Position.X, 333, hrp.Position.Z)
 		toggleButton.Text = "Tele Xuống Đất"
 	else
-		-- Tele xuống gần mặt đất, ngoài base
+		-- Tele xuống đất, tránh base
 		local offsetX = math.random(-100, 100)
 		local offsetZ = math.random(-100, 100)
 		hrp.CFrame = CFrame.new(hrp.Position.X + offsetX, 25, hrp.Position.Z + offsetZ)
@@ -56,7 +67,12 @@ toggleButton.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Ẩn/hiện UI
+-- Ẩn UI
 hideButton.MouseButton1Click:Connect(function()
-	MainFrame.Visible = not MainFrame.Visible
+	MainFrame.Visible = false
+end)
+
+-- Hiện UI lại
+showButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = true
 end)
